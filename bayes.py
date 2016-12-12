@@ -7,7 +7,9 @@ rows=20
 
 # extract the frequency table from file (or other class); this is temporary!
 feature_prob_table = numpy.ones((2*rows*cols, 20));
+# must load this from file or something
 
+digits = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 
 def compP(digit):
     top = 0.1;
@@ -25,8 +27,7 @@ def compP(digit):
         for k in range(0, cols*rows):
             product = product * feature_prob_table[k, j]
         bottom = bottom + product
-    return top / bottom
+    print "P(",digit,"| E ) = ", top/bottom
 
-
-p_zero = compP(0)
-print p_zero
+for digit in digits:
+    compP(digit)
