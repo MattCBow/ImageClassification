@@ -25,7 +25,7 @@ def compP(digit):
         product = 1
         if int(i / 2) is digit:
             continue
-        for k in range(0, cols*rows):
+        for k in range(0, 2*cols*rows):
             product = product * feature_prob_table[k, j]
         bottom = bottom + product
     print "P(",digit,"| E ) = ", top/bottom
