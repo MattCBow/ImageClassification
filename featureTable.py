@@ -22,11 +22,10 @@ digit = 0; # temporary
 def table_builder_digit(array):
     for i in range(0, len(array)):
         if array[i] == 1:
-            row = 2 * i
+            row = 2 * i # 0 comes first in frequency table
         else:
             row = 2 * i + 1
         for col in range(1, (2*numDigs), 2):# assume none is digit
-            print col
             if int(col / 2) is digit:
                 feature_prob_table[row, col-1] = feature_prob_table[row, col-1] + 1;
             else:
