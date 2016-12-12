@@ -8,6 +8,7 @@ rows=20
 # extract the frequency table from file (or other class); this is temporary!
 feature_prob_table = numpy.ones((2*rows*cols, 20));
 # must load this from file or something
+# could probably just do the table-updating in this program
 
 digits = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 
