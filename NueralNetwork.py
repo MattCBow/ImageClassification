@@ -8,10 +8,11 @@ import matplotlib.pyplot as plt
 from scipy import optimize
 classifier = ImageClassifier()
 
-X = np.array(classifier.data['digit']['test']['features'][0:10], dtype=float)
-Y = np.array(classifier.data['digit']['test']['classification'][0:10], dtype=float)
+X = np.array(classifier.data['digit']['test']['features'][0:20], dtype=float)
+Y = np.array(classifier.data['digit']['test']['classification'][0:20], dtype=float)
 X = X/100
 Y = Y/10
+
 nueral_net = NueralNetwork(input_size=X.shape[1],output_size=Y.shape[1])
 trainer = NodeTrainer(nueral_net)
 trainer.train(X,Y)
