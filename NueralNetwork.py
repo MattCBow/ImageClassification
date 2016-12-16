@@ -1,33 +1,4 @@
 #Artificial Intelligence Nueral Network Implementation
-"""
-
-from ImageClassifier import ImageClassifier
-from NueralNetwork import NueralNetwork, NodeTrainer
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy import optimize
-classifier = ImageClassifier()
-
-X = np.array(classifier.data['digit']['test']['features'][0:20], dtype=float)
-Y = np.array(classifier.data['digit']['test']['classification'][0:20], dtype=float)
-X = X/100
-Y = Y/10
-
-nueral_net = NueralNetwork(input_size=X.shape[1],output_size=Y.shape[1])
-trainer = NodeTrainer(nueral_net)
-trainer.train(X,Y)
-
-
-
-X = np.array(([3,5], [5,1], [10,2]), dtype=float)
-y = np.array(([75], [82], [93]), dtype=float)
-X = X/np.amax(X, axis=0)
-Y = y/100
-
-nueral_net = NueralNetwork(input_size=X.shape[1],output_size=Y.shape[1])
-trainer = NodeTrainer(nueral_net)
-
-"""
 
 import numpy as np
 from scipy import optimize
@@ -141,3 +112,33 @@ class NodeTrainer(object):
                                     callback = self.callbackF)
         self.nueral_net.setParams(_res.x)
         self.optimizationResults = _res
+
+"""
+
+from ImageClassifier import ImageClassifier
+from NueralNetwork import NueralNetwork, NodeTrainer
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import optimize
+classifier = ImageClassifier()
+
+X = np.array(classifier.data['digit']['test']['features'][0:20], dtype=float)
+Y = np.array(classifier.data['digit']['test']['classification'][0:20], dtype=float)
+X = X/100
+Y = Y/10
+
+nueral_net = NueralNetwork(input_size=X.shape[1],output_size=Y.shape[1])
+trainer = NodeTrainer(nueral_net)
+trainer.train(X,Y)
+
+
+
+X = np.array(([3,5], [5,1], [10,2]), dtype=float)
+y = np.array(([75], [82], [93]), dtype=float)
+X = X/np.amax(X, axis=0)
+Y = y/100
+
+nueral_net = NueralNetwork(input_size=X.shape[1],output_size=Y.shape[1])
+trainer = NodeTrainer(nueral_net)
+
+"""
