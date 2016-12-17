@@ -72,6 +72,8 @@ def print_structure(structure, depth):
         ret += ('\t'*depth) + (structure) + ('\n')
     if isinstance(structure, type(1)):
         ret += ('\t'*depth) + (str(structure))[:limit] + ('\n')
+    if isinstance(structure, type(1.0)):
+        ret += ('\t'*depth) + (str(structure))[:limit] + ('\n')
     if isinstance(structure, type((1,2))):
         ret += ('\t'*depth) + str(structure[0]) + (": ") + print_structure(structure[1], depth)[depth:]
     if isinstance(structure, type([])):

@@ -3,6 +3,16 @@
 class BayesNetwork(object):
 
     #-----------RANDOM STARTER WEIGHTS---------------
+
+    def probability_y(self, X):
+        p_y = [{} for y in range(0,self.output_size)]
+        for y_index in range(len(p_y)):
+            for y_value in self.model['Y'][y_index]:
+                p_y[y_index][y_value] = (1.0*self.model['Y'][y_index][y_value])/self.model['samples']
+                for (x_index, x_value) in [(x_index, X[x_index]) for x_index in range(self.input_size)]:
+                    p_y[y_index][y_value] *= (1.0*self.model['X|Y'][y_index][y_value][x_index][x_value])/self.model['X'][x_index][x_value]
+        return p_y
+
     def forward_X(self, X):
         for (x_index, x_value) in [(x_index, X[x_index]) for x_index in range(self.input_size)]:
             if x_value in self.model['X'][x_index]:
@@ -37,12 +47,6 @@ class BayesNetwork(object):
         self.forward_Y(Y)
         self.forward_X_Y(X,Y)
 
-    def probability_y(self, X, Y):
-        p_y = [{} for y in range(0,self.output_size)]
-        for y_index in range(len(p_y)):
-            for y_value in self.model['Y'][y_index]:
-                p_y[y_index][y_value] = (1.0*self.model['Y'][y_index][y_value])/self.model['samples']
-
     def new_model(self):
         self.model = {
             'samples':0,
@@ -73,10 +77,28 @@ for i in range(len(input)):
     baynet.forward(input[i], output[i])
 
 print_struct(baynet.model)
-print_struct(baynet.probability_y([0,0,0], [0,0]))
+print_struct(baynet.probability_y([0,0,0]))
 
 
 """
+
+def p_y(baynet, X):
+    p_y = [{} for y in range(0,baynet.output_size)]
+    for y_index in range(len(p_y)):
+        for y_value in baynet.model['Y'][y_index]:
+            p_y = (1.0*baynet.model['Y'][y_index][y_value])/baynet.model['samples']
+            p_x = 1.0
+            p_x_y = 1.0
+            for (x_index, x_value) in [(x_index, X[x_index]) for x_index in range(baynet.input_size)]:
+                p_x *= (1.0*baynet.model['X'][x_index][x_value])/baynet.model['samples']
+                p_x_y *= (1.0*baynet.model['X|Y'][y_index][y_value][x_index][x_value])/baynet.model['Y'][y_index][y_value]
+            p_y[y_index][y_value] = {
+                            'p_y': p_y,
+                            'p_x': p_x,
+                            'p_x_y': p_x_y,
+                            'value': (p_x_y*p_y/p_x),
+            }
+    return p_y
 
 
 if __name__ == "__main__":
