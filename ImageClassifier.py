@@ -2,7 +2,7 @@
 
 class ImageClassifier(object):
 
-    def initData(self):
+    def init_data(self):
         self.data = {
             'digit':{
                 'train':{
@@ -25,7 +25,7 @@ class ImageClassifier(object):
                     'image_file':{'path':'data/facedata/facedatavalidation'},
                     'label_file':{'path':'data/facedata/facedatavalidationlabels'}}}}
 
-    def loadData(self):
+    def load_data(self):
         for data_class in self.data.values():
             for data_set in data_class.values():
                 labels = []
@@ -40,7 +40,7 @@ class ImageClassifier(object):
                 data_set['image_file']['data'] = images
 
 
-    def formatData(self):
+    def format_data(self):
         for data_class in self.data.values():
             for data_set in data_class.values():
                 images = data_set['image_file']['data']
@@ -60,46 +60,44 @@ class ImageClassifier(object):
                 data_set['classification'] = classifications
                 data_set['features'] = features
 
-
-    def printStructure(self, structure, depth):
-        ret = ""
-        limit = 5
-        if isinstance(structure, type('a')):
-            ret += ('\t'*depth) + (structure) + ('\n')
-        if isinstance(structure, type(1)):
-            ret += ('\t'*depth) + (str(structure))[:limit] + ('\n')
-        if isinstance(structure, type((1,2))):
-            ret += ('\t'*depth) + str(structure[0]) + (": ") + self.printStructure(structure[1], depth)[depth:]
-        if isinstance(structure, type([])):
-            ret += ('\t'*depth) + ('[') + ('\n')
-            for i in range(0,len(structure))[:limit]: ret += self.printStructure((i,structure[i]), depth+1)
-            ret = ret[:len(ret)-1] + (']') + ('\n')
-        if isinstance(structure, type({})) and len(structure):
-            ret += ('\t'*depth) + ('{') + ('\n')
-            for (k,v) in structure.iteritems(): ret += self.printStructure((k,v), depth+1)
-            ret = ret[:len(ret)-1] + ('}') + ('\n')
-        return ret
-
-    def printStruct(self, structure):
-        print self.printStructure(structure, 0)
-
-
     def __init__(self):
-        self.initData()
-        self.loadData()
-        self.formatData()
+        self.init_data()
+        self.load_data()
+        self.format_data()
+
+def print_structure(structure, depth):
+    ret = ""
+    limit = 5
+    if isinstance(structure, type('a')):
+        ret += ('\t'*depth) + (structure) + ('\n')
+    if isinstance(structure, type(1)):
+        ret += ('\t'*depth) + (str(structure))[:limit] + ('\n')
+    if isinstance(structure, type((1,2))):
+        ret += ('\t'*depth) + str(structure[0]) + (": ") + print_structure(structure[1], depth)[depth:]
+    if isinstance(structure, type([])):
+        ret += ('\t'*depth) + ('[') + ('\n')
+        for i in range(0,len(structure))[:limit]: ret += print_structure((i,structure[i]), depth+1)
+        ret = ret[:len(ret)-1] + (']') + ('\n')
+    if isinstance(structure, type({})) and len(structure):
+        ret += ('\t'*depth) + ('{') + ('\n')
+        for (k,v) in structure.iteritems(): ret += print_structure((k,v), depth+1)
+        ret = ret[:len(ret)-1] + ('}') + ('\n')
+    return ret
+
+def print_struct(structure):
+    print print_structure(structure, 0)
 
 #-------------------END OF CLASSIFIER----------------------
 #from ImageClassifier import ImageClassifier
 def main():
     print "Welcome"
     #classifier = ImageClassifier()
-    #classifier.printStruct(classifier.data)
-    #classifier.loadData()
-    #classifier.printStruct(classifier.data)
-    #classifier.formatData()
-    #classifier.printStruct(classifier.data)
-    #classifier.printStruct(classifier.data['face']['train']['image_file'])
+    #classifier.print_struct(classifier.data)
+    #classifier.load_data()
+    #classifier.print_struct(classifier.data)
+    #classifier.format_data()
+    #classifier.print_struct(classifier.data)
+    #classifier.print_struct(classifier.data['face']['train']['image_file'])
     #print classifier.data['digit']['test']['features'][0:2]
     #print [len(f) for f in classifier.data['digit']['test']['features'][0:1000:10]]
 
