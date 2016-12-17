@@ -67,18 +67,17 @@ class ImageClassifier(object):
 
 def print_structure(structure, depth):
     ret = ""
-    limit = 5
     if isinstance(structure, type('a')):
         ret += ('\t'*depth) + (structure) + ('\n')
     if isinstance(structure, type(1)):
-        ret += ('\t'*depth) + (str(structure))[:limit] + ('\n')
+        ret += ('\t'*depth) + (str(structure)) + ('\n')
     if isinstance(structure, type(1.0)):
-        ret += ('\t'*depth) + (str(structure))[:limit] + ('\n')
+        ret += ('\t'*depth) + (str(structure)) + ('\n')
     if isinstance(structure, type((1,2))):
         ret += ('\t'*depth) + str(structure[0]) + (": ") + print_structure(structure[1], depth)[depth:]
     if isinstance(structure, type([])):
         ret += ('\t'*depth) + ('[') + ('\n')
-        for i in range(0,len(structure))[:limit]: ret += print_structure((i,structure[i]), depth+1)
+        for i in range(0,len(structure)): ret += print_structure((i,structure[i]), depth+1)
         ret = ret[:len(ret)-1] + (']') + ('\n')
     if isinstance(structure, type({})) and len(structure):
         ret += ('\t'*depth) + ('{') + ('\n')
