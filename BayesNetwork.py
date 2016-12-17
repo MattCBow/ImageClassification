@@ -1,5 +1,31 @@
 #Artificial Intelligence Bayes Network Implementation
 
+"""
+from ImageClassifier import *
+from BayesNetwork import *
+import numpy as np
+classifier = ImageClassifier()
+input = classifier.data['face']['test']['features']
+output = classifier.data['face']['test']['classification']
+#input = np.array([[a,b,c] for a in range(3) for b in range(3) for c in range(3) for i in range(2*2)], dtype=int)
+#output = np.array([[a,b] for i in range(3*3*3) for a in range(2) for b in range(2)], dtype=int)
+
+X = np.array(input, dtype=int)
+Y = np.array(output, dtype=int)
+
+baynet = BayesNetwork(len(X[0]), len(Y[0]))
+baynet.train(X,Y)
+
+baynet.prediction_Y(X[0])
+[baynet.prediction_Y(X[i]) for i in range(10)]
+
+print_struct(baynet.model)
+print_struct(baynet.probability_Y([0,0,0]))
+print str(baynet.prediction_Y([0,0,0]))
+
+classifier.data['face']['test']['image_file'][0]
+"""
+
 class BayesNetwork(object):
 
     #-----------RANDOM STARTER WEIGHTS--------------
@@ -105,39 +131,3 @@ class BayesNetwork(object):
         self.input_size = input_size
         self.output_size = output_size
         self.new_model()
-
-
-#-------------------END OF BAYES NETWORK----------------------
-
-def main():
-    print "Welcome"
-
-"""
-from ImageClassifier import *
-from BayesNetwork import *
-import numpy as np
-classifier = ImageClassifier()
-input = classifier.data['face']['test']['features']
-output = classifier.data['face']['test']['classification']
-#input = np.array([[a,b,c] for a in range(3) for b in range(3) for c in range(3) for i in range(2*2)], dtype=int)
-#output = np.array([[a,b] for i in range(3*3*3) for a in range(2) for b in range(2)], dtype=int)
-
-X = np.array(input, dtype=int)
-Y = np.array(output, dtype=int)
-
-baynet = BayesNetwork(len(X[0]), len(Y[0]))
-baynet.train(X,Y)
-
-baynet.prediction_Y(X[0])
-[baynet.prediction_Y(X[i]) for i in range(10)]
-
-print_struct(baynet.model)
-print_struct(baynet.probability_Y([0,0,0]))
-print str(baynet.prediction_Y([0,0,0]))
-
-classifier.data['face']['test']['image_file'][0]
-"""
-
-
-if __name__ == "__main__":
-    main()
