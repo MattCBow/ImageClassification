@@ -1,3 +1,12 @@
+from ImageClassifier import *
+from BayesNetwork import *
+import numpy as np
+from Perceptron import *
+from ModelTrainer import *
+import matplotlib.pyplot as plt
+from scipy import optimize
+from NueralNetwork import *
+
 #---------------------------Main Classifier File--------------------------
 
 class ImageClassifier(object):
@@ -88,11 +97,64 @@ def print_structure(structure, depth):
 def print_struct(structure):
     print print_structure(structure, 0)
 
-#-------------------END OF CLASSIFIER----------------------
-#from ImageClassifier import ImageClassifier
 def main():
-    print "Welcome"
-    #classifier = ImageClassifier()
+    print "Welcome\n"
+
+#---------------------------------BAYES-----------------------------------------
+
+    print "Training Bayes..."
+
+    classifier = ImageClassifier()
+    input = classifier.data['face']['train']['features']
+    output = classifier.data['face']['train']['classification']
+    X = np.array(input, dtype=int)
+    Y = np.array(output, dtype=int)
+    baynet = BayesNetwork(len(X[0]), len(Y[0]))
+    baynet.train(X,Y)
+
+    p_hat = baynet.forward(X[0])
+    print "Testing Bayes..."
+
+    right = 0
+    wrong = 0
+    for i in range(len(Y)):
+        if baynet.forward(X[i])[0]['prediction'] == Y[i][0]:
+            right +=1
+        else:
+            wrong +=1
+    print "Bayes accuracy: " , float(right)/float(right+wrong)
+
+#----------------------------PERCEPTRON-----------------------------------------
+
+    print "\nTraining Perceptron..."
+
+    X = np.array(classifier.data['digit']['test']['features'][0:200], dtype=float)
+    Y = np.array(classifier.data['digit']['test']['classification'][0:200], dtype=float)
+    X = X/100
+    Y = Y/10
+    percep_net = Perceptron(X.shape[1],Y.shape[1])
+    trainer = ModelTrainer(percep_net)
+    trainer.train(X,Y)
+
+    print "Testing Perceptron..."
+
+
+#-----------------------------NEURAL NET----------------------------------------
+
+    print "\nTraining Neural Network..."
+
+    X = np.array(classifier.data['digit']['test']['features'][0:200], dtype=float)
+    Y = np.array(classifier.data['digit']['test']['classification'][0:200], dtype=float)
+    X = X/100
+    Y = Y/10
+    nueral_net = NueralNetwork(input_size=X.shape[1],output_size=Y.shape[1])
+    trainer = ModelTrainer(nueral_net)
+    trainer.train(X,Y)
+
+    print "Testing Neural Network..."
+
+
+
     #classifier.print_struct(classifier.data)
     #classifier.load_data()
     #classifier.print_struct(classifier.data)
