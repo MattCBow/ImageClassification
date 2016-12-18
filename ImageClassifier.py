@@ -104,6 +104,29 @@ def main():
     input = classifier.data['face']['train']['features']
     output = classifier.data['face']['train']['classification']
 
+#---------------------------------BAYES-----------------------------------------
+    print "\n\n----------BAYES----------"
+
+    X = np.array(input, dtype=int)
+    Y = np.array(output, dtype=int)
+    baynet = BayesNetwork(len(X[0]), len(Y[0]))
+
+
+    right = 0
+    wrong = 0
+
+    for p in np.arange(0.1,1,0.1):
+        print "\nTraining Bayesian Network with ", (100*p), "% of training data."
+        baynet.train(X, Y, p)
+        print "Testing Bayesian Network..."
+        for i in range(len(Y)):
+            if baynet.forward(X[i])[0]['prediction'] == Y[i][0]:
+                right +=1
+            else:
+                wrong +=1
+        print "Bayesian Network accuracy @ ",(100*p),"%: " , float(right)/float(right+wrong)
+
+
 #----------------------------PERCEPTRON-----------------------------------------
     print "\n----------PERCEPTRON----------"
     X = np.array(classifier.data['digit']['test']['features'][0:200], dtype=float)
@@ -157,30 +180,6 @@ def main():
             else:
                 wrong +=1
         print "Neural Net accuracy @ ",(p*100),"%: " , float(right)/float(right+wrong)
-
-#---------------------------------BAYES-----------------------------------------
-
-    print "\n\n----------BAYES----------"
-    print "\nTraining Bayes..."
-
-    X = np.array(input, dtype=int)
-    Y = np.array(output, dtype=int)
-    baynet = BayesNetwork(len(X[0]), len(Y[0]))
-
-    print "Testing Bayes..."
-
-    right = 0
-    wrong = 0
-
-    for p in np.arange(0.1,1,0.1):
-        baynet.train(X, Y, p)
-        for i in range(len(Y)):
-            if baynet.forward(X[i])[0]['prediction'] == Y[i][0]:
-                right +=1
-            else:
-                wrong +=1
-        print "Bayes accuracy @ ",(100*p),"%: " , float(right)/float(right+wrong)
-
 
 
 
