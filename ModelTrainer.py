@@ -16,7 +16,7 @@ class ModelTrainer(object):
 
     def callbackF(self, params):
         self.count+=1
-        print self.count, ' - finish'
+        # print self.count, ' - finish'
         self.model.set_params(params)
         self.J.append(self.model.cost_function(self.X, self.y))
 

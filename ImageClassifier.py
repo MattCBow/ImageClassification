@@ -100,58 +100,89 @@ def print_struct(structure):
 def main():
     print "Welcome\n"
 
-#---------------------------------BAYES-----------------------------------------
-
-    print "Training Bayes..."
-
     classifier = ImageClassifier()
     input = classifier.data['face']['train']['features']
     output = classifier.data['face']['train']['classification']
-    X = np.array(input, dtype=int)
-    Y = np.array(output, dtype=int)
-    baynet = BayesNetwork(len(X[0]), len(Y[0]))
-    baynet.train(X,Y)
-
-    p_hat = baynet.forward(X[0])
-    print "Testing Bayes..."
-
-    right = 0
-    wrong = 0
-    for i in range(len(Y)):
-        if baynet.forward(X[i])[0]['prediction'] == Y[i][0]:
-            right +=1
-        else:
-            wrong +=1
-    print "Bayes accuracy: " , float(right)/float(right+wrong)
 
 #----------------------------PERCEPTRON-----------------------------------------
-
-    print "\nTraining Perceptron..."
-
+    print "\n----------PERCEPTRON----------"
     X = np.array(classifier.data['digit']['test']['features'][0:200], dtype=float)
     Y = np.array(classifier.data['digit']['test']['classification'][0:200], dtype=float)
     X = X/100
     Y = Y/10
     percep_net = Perceptron(X.shape[1],Y.shape[1])
     trainer = ModelTrainer(percep_net)
-    trainer.train(X,Y)
+    trainer.train(X,Y) #goes inside loop
 
-    print "Testing Perceptron..."
+    right = 0
+    wrong = 0
+
+    for p in np.arange(0.1,1.01,0.1):
+        # train a subset here using 'p'
+        print "\nTraining Perceptron Network with ", (100*p), "% of training data."
+        # trainer.train(X,Y,p)
+        # then we test
+        print "Testing Perceptron Network..."
+        for i in range(len(Y)):
+            if percep_net.forward(X[i])[0] == Y[i][0]:
+                right +=1
+            else:
+                wrong +=1
+        print "Perceptron Net accuracy @ ",(p*100),"%: " , float(right)/float(right+wrong)
 
 
 #-----------------------------NEURAL NET----------------------------------------
 
-    print "\nTraining Neural Network..."
-
+    print "\n\n----------NEURAL NET----------"
     X = np.array(classifier.data['digit']['test']['features'][0:200], dtype=float)
     Y = np.array(classifier.data['digit']['test']['classification'][0:200], dtype=float)
     X = X/100
     Y = Y/10
     nueral_net = NueralNetwork(input_size=X.shape[1],output_size=Y.shape[1])
     trainer = ModelTrainer(nueral_net)
-    trainer.train(X,Y)
+    trainer.train(X,Y) # this goes inside loop
 
-    print "Testing Neural Network..."
+    right = 0
+    wrong = 0
+
+    for p in np.arange(0.1,1,0.1):
+        # train a subset here using 'p'
+        print "\nTraining Neural Network with ", (100*p), "% of training data."
+        # trainer.train(X,Y,p)
+        # then we test
+        print "Testing Neural Network..."
+        for i in range(len(Y)):
+            if nueral_net.forward(X[i])[0] == Y[i][0]:
+                right +=1
+            else:
+                wrong +=1
+        print "Neural Net accuracy @ ",(p*100),"%: " , float(right)/float(right+wrong)
+
+#---------------------------------BAYES-----------------------------------------
+
+    print "\n\n----------BAYES----------"
+    print "\nTraining Bayes..."
+
+    X = np.array(input, dtype=int)
+    Y = np.array(output, dtype=int)
+    baynet = BayesNetwork(len(X[0]), len(Y[0]))
+
+    print "Testing Bayes..."
+
+    right = 0
+    wrong = 0
+
+    for p in np.arange(0.1,1,0.1):
+        baynet.train(X, Y, p)
+        for i in range(len(Y)):
+            if baynet.forward(X[i])[0]['prediction'] == Y[i][0]:
+                right +=1
+            else:
+                wrong +=1
+        print "Bayes accuracy @ ",(100*p),"%: " , float(right)/float(right+wrong)
+
+
+
 
 
 

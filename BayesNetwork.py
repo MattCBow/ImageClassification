@@ -113,6 +113,6 @@ class BayesNetwork(object):
         self.output_size = output_size
         self.init_samples()
 
-    def train(self, X, Y):
-        for i in range(len(X)):
+    def train(self, X, Y, percentage):
+        for i in range(int(percentage*len(X))):
             self.samples = self.insert_sample(self.samples, X[i], Y[i])
