@@ -6,6 +6,9 @@ from ModelTrainer import *
 import matplotlib.pyplot as plt
 from scipy import optimize
 from NueralNetwork import *
+import time
+from scipy.stats import norm
+import gc
 
 #---------------------------Main Classifier File--------------------------
 
@@ -101,98 +104,171 @@ def main():
     print "Welcome\n"
 
     classifier = ImageClassifier()
-    input = classifier.data['face']['train']['features']
-    output = classifier.data['face']['train']['classification']
 
 #---------------------------------BAYES-----------------------------------------
     print "\n\n----------BAYES----------"
 
-    X = np.array(input, dtype=int)
-    Y = np.array(output, dtype=int)
-    baynet = BayesNetwork(len(X[0]), len(Y[0]))
+    for data_type in classifier.data.keys():
+        print "\n",data_type, ":"
+        #performance['']
+        input = classifier.data[data_type]['train']['features']
+        output = classifier.data[data_type]['train']['classification']
+
+        X_train = np.array(input, dtype=int)
+        Y_train = np.array(output, dtype=int)
+        baynet = BayesNetwork(len(X_train[0]), len(Y_train[0]))
+
+        X_test = np.array(classifier.data[data_type]['test']['features'], dtype=int)
+        Y_test = np.array(classifier.data[data_type]['test']['classification'], dtype=int)
+
+        for p in np.arange(0.1,1.01,0.1):
+            right = 0
+            wrong = 0
+            print "\nTraining Bayesian Network with ", (100*p), "% of training data."
+            train_start = time.time()
+            datapoints = len(X_train) * (p)
+            gc.collect()
+            baynet.train( X_train[:datapoints] , Y_train[:datapoints] )
+            predictions = [baynet.forward(X_test[i])[0]['prediction'] for i in range(len(Y_test))]
+            costs = predictions - Y_test
+            error, std = norm.fit(costs)
+            train_end = time.time()
+            time_elapsed = (train_end - train_start)
+
+            classifier.data[data_type]['test'][datapoints] = {}
+            classifier.data[data_type]['test'][datapoints]['error'] = error
+            classifier.data[data_type]['test'][datapoints]['std'] = std
+            classifier.data[data_type]['test'][datapoints]['time'] = time_elapsed
+
+            print_struct(classifier.data[data_type]['test'][datapoints])
 
 
-    right = 0
-    wrong = 0
-
-    for p in np.arange(0.1,1,0.1):
-        print "\nTraining Bayesian Network with ", (100*p), "% of training data."
-        baynet.train(X, Y, p)
-        print "Testing Bayesian Network..."
-        for i in range(len(Y)):
-            if baynet.forward(X[i])[0]['prediction'] == Y[i][0]:
-                right +=1
-            else:
-                wrong +=1
-        print "Bayesian Network accuracy @ ",(100*p),"%: " , float(right)/float(right+wrong)
-
+            '''
+            train_start = time.time()
+            datapoints = len(X_train) * (p)
+            baynet.train( X_train[:datapoints] , Y_train[:datapoints] )
+            train_end = time.time()
+            print "Training time:", (train_end - train_start), "seconds"
+            print "Testing Bayesian Network..."
+            #classifier.data[data_type]['test'][]
+            for i in range(len(Y_test)):
+                if baynet.forward(X_test[i])[0]['prediction'] == Y_test[i][0]:
+                    right +=1
+                else:
+                    wrong +=1
+            '''
+            #print "Bayesian Network accuracy:" , 100*(float(right)/float(right+wrong)), "%."
 
 #----------------------------PERCEPTRON-----------------------------------------
     print "\n----------PERCEPTRON----------"
-    X = np.array(classifier.data['digit']['test']['features'][0:200], dtype=float)
-    Y = np.array(classifier.data['digit']['test']['classification'][0:200], dtype=float)
-    X = X/100
-    Y = Y/10
-    percep_net = Perceptron(X.shape[1],Y.shape[1])
-    trainer = ModelTrainer(percep_net)
-    trainer.train(X,Y) #goes inside loop
 
-    right = 0
-    wrong = 0
+    for data_type in classifier.data.keys().reverse():
+        print "\n",data_type, ":"
+        X_train = np.array(classifier.data[data_type]['train']['features'], dtype=float)
+        Y_train = np.array(classifier.data[data_type]['train']['classification'], dtype=float)
+        X_train = X_train/100
+        Y_train = Y_train/10
 
-    for p in np.arange(0.1,1.01,0.1):
-        # train a subset here using 'p'
-        print "\nTraining Perceptron Network with ", (100*p), "% of training data."
-        # trainer.train(X,Y,p)
-        # then we test
-        print "Testing Perceptron Network..."
-        for i in range(len(Y)):
-            if percep_net.forward(X[i])[0] == Y[i][0]:
-                right +=1
-            else:
-                wrong +=1
-        print "Perceptron Net accuracy @ ",(p*100),"%: " , float(right)/float(right+wrong)
+        X_test = np.array(classifier.data[data_type]['test']['features'], dtype=float)
+        Y_test = np.array(classifier.data[data_type]['test']['classification'], dtype=float)
+        X_test = X_test/100
+        Y_test = Y_test/10
+        percep_net = Perceptron(X_train.shape[1],Y_train.shape[1])
+        trainer = ModelTrainer(percep_net)
 
+        for p in np.arange(0.1,1.01,0.1):
+            right = 0
+            wrong = 0
+            print "\nTraining Perceptron Network with ", (100*p), "% of training data."
+            train_start = time.time()
+            datapoints = len(X_train) * (p)
+            trainer.train( X_train[:datapoints] , Y_train[:datapoints] )
+            predictions =  percep_net.forward(X_test)#[percep_net.forward(X_test[i])[0]['prediction'] for i in range(len(Y_test))]
+            costs = predictions - Y_test
+            error, std = norm.fit(costs)
+            train_end = time.time()
+            time_elapsed = (train_end - train_start)
+
+            classifier.data[data_type]['test'][datapoints] = {}
+            classifier.data[data_type]['test'][datapoints]['error'] = error
+            classifier.data[data_type]['test'][datapoints]['std'] = std
+            classifier.data[data_type]['test'][datapoints]['time'] = time_elapsed
+
+            print_struct(classifier.data[data_type]['test'][datapoints])
+
+            '''
+            train_start = time.time()
+            datapoints = len(X_train) * (p)
+            trainer.train(X_train[:datapoints],Y_train[:datapoints])
+            train_end = time.time()
+            print "Training time:", (train_end - train_start), "seconds"
+            print "Testing Perceptron Network..."
+            for i in range(len(Y_test)):
+                ret = percep_net.forward(X_test[i])[0]
+                predict = round(10*percep_net.forward(X_test[i])[0])
+                expected = round(10*Y_test[i][0])
+                if predict == expected:
+                    right +=1
+                else:
+                    wrong +=1
+            print "Perceptron Network accuracy:" , 100*(float(right)/float(right+wrong)), "%."
+            '''
 
 #-----------------------------NEURAL NET----------------------------------------
-
     print "\n\n----------NEURAL NET----------"
-    X = np.array(classifier.data['digit']['test']['features'][0:200], dtype=float)
-    Y = np.array(classifier.data['digit']['test']['classification'][0:200], dtype=float)
-    X = X/100
-    Y = Y/10
-    nueral_net = NueralNetwork(input_size=X.shape[1],output_size=Y.shape[1])
-    trainer = ModelTrainer(nueral_net)
-    trainer.train(X,Y) # this goes inside loop
+    for data_type in classifier.data.keys().reverse():
+        print "\n",data_type, ":"
+        X_train = np.array(classifier.data[data_type]['train']['features'], dtype=float)
+        Y_train = np.array(classifier.data[data_type]['train']['classification'], dtype=float)
+        X_train = X_train/100
+        Y_train = Y_train/10
 
-    right = 0
-    wrong = 0
+        X_test = np.array(classifier.data[data_type]['test']['features'], dtype=float)
+        Y_test = np.array(classifier.data[data_type]['test']['classification'], dtype=float)
+        X_test = X_test/100
+        Y_test = Y_test/10
 
-    for p in np.arange(0.1,1,0.1):
-        # train a subset here using 'p'
-        print "\nTraining Neural Network with ", (100*p), "% of training data."
-        # trainer.train(X,Y,p)
-        # then we test
-        print "Testing Neural Network..."
-        for i in range(len(Y)):
-            if nueral_net.forward(X[i])[0] == Y[i][0]:
-                right +=1
-            else:
-                wrong +=1
-        print "Neural Net accuracy @ ",(p*100),"%: " , float(right)/float(right+wrong)
+        nueral_net = NueralNetwork(input_size=X_train.shape[1],output_size=Y_train.shape[1])
+        trainer = ModelTrainer(nueral_net)
+
+        for p in np.arange(0.1,1.01,0.1):
+            right = 0
+            wrong = 0
+            print "\nTraining Neural Network with ", (100*p), "% of training data."
+            train_start = time.time()
+            datapoints = len(X_train) * (p)
+            trainer.train( X_train[:datapoints] , Y_train[:datapoints] )
+            predictions = nueral_net.forward(X_test)#[nueral_net.forward(X_test[i])[0]['prediction'] for i in range(len(Y_test))]
+            costs = predictions - Y_test
+            error, std = norm.fit(costs)
+            train_end = time.time()
+            time_elapsed = (train_end - train_start)
+
+            classifier.data[data_type]['test'][datapoints] = {}
+            classifier.data[data_type]['test'][datapoints]['error'] = error
+            classifier.data[data_type]['test'][datapoints]['std'] = std
+            classifier.data[data_type]['test'][datapoints]['time'] = time_elapsed
+
+            print_struct(classifier.data[data_type]['test'][datapoints])
+
+
+            '''
+            train_start = time.time()
+            datapoints = len(X_train) * (p)
+            trainer.train(X_train[:datapoints],Y_train[:datapoints])
+            train_end = time.time()
+            print "Training time:", (train_end - train_start), "seconds"
+            print "Testing Neural Network..."
+            for i in range(len(Y_test)):
+                if nueral_net.forward(X_test[i])[0] == Y_test[i][0]:
+                    right +=1
+                else:
+                    wrong +=1
+            print "Neural Network accuracy:" , 100*(float(right)/float(right+wrong)), "%."
+            '''
 
 
 
-
-
-    #classifier.print_struct(classifier.data)
-    #classifier.load_data()
-    #classifier.print_struct(classifier.data)
-    #classifier.format_data()
-    #classifier.print_struct(classifier.data)
-    #classifier.print_struct(classifier.data['face']['train']['image_file'])
-    #print classifier.data['digit']['test']['features'][0:2]
-    #print [len(f) for f in classifier.data['digit']['test']['features'][0:1000:10]]
 
 if __name__ == "__main__":
     main()

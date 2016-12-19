@@ -49,10 +49,14 @@ class BayesNetwork(object):
                 p_table[y_index][y_value] =  [{} for x in range(self.input_size)]
                 for (x_index, x_value) in [(i, X[i])  for i in range(len(X))]:
                     p_table[y_index][y_value][x_index][x_value] = {}
-                    s_x = (model['X'][x_index][x_value])
+                    s_u = model['total']
+                    s_x = model['X'][x_index][x_value]
+                    s_y = model['Y'][y_index][y_value]
                     s_x_y = model['X|Y'][y_index][y_value][x_index][x_value]
-                    p_hat_y_x = (1.0*s_x_y) / (s_x)
+                    p_hat_y_x = (1.0*s_x_y*s_u) / (s_x*s_y)
+                    p_table[y_index][y_value][x_index][x_value]['s_u'] = s_u
                     p_table[y_index][y_value][x_index][x_value]['s_x'] = s_x
+                    p_table[y_index][y_value][x_index][x_value]['s_y'] = s_y
                     p_table[y_index][y_value][x_index][x_value]['s_x_y'] = s_x_y
                     p_table[y_index][y_value][x_index][x_value]['p_hat'] = p_hat_y_x
                 S_p_hat = [p_table[y_index][y_value][x_index][x_value]['p_hat'] for (x_index, x_value) in [(i, X[i])  for i in range(len(X))]]
@@ -111,8 +115,8 @@ class BayesNetwork(object):
     def __init__(self, input_size, output_size):
         self.input_size = input_size
         self.output_size = output_size
-        self.init_samples()
 
-    def train(self, X, Y, percentage):
-        for i in range(int(percentage*len(X))):
+    def train(self, X, Y):
+        self.init_samples()
+        for i in range(len(X)):
             self.samples = self.insert_sample(self.samples, X[i], Y[i])
