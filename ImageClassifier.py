@@ -108,7 +108,10 @@ def main():
 #---------------------------------BAYES-----------------------------------------
     print "\n\n----------BAYES----------"
 
-    for data_type in classifier.data.keys():
+    data_types = classifier.data.keys()
+    data_types.reverse()
+    
+    for data_type in data_types:
         print "\n",data_type, ":"
         #performance['']
         input = classifier.data[data_type]['train']['features']
