@@ -124,7 +124,7 @@ def main():
         for p in np.arange(0.1,1.01,0.1):
             right = 0
             wrong = 0
-            print "\nTraining Bayesian Network with ", (100*p), "% of training data."
+            print "\nTraining Bayesian Network with ", int((100*p)), "% of training data."
             train_start = time.time()
             datapoints = len(X_train) * (p)
             gc.collect()
@@ -162,7 +162,7 @@ def main():
 #----------------------------PERCEPTRON-----------------------------------------
     print "\n----------PERCEPTRON----------"
 
-    for data_type in classifier.data.keys().reverse():
+    for data_type in classifier.data.keys():
         print "\n",data_type, ":"
         X_train = np.array(classifier.data[data_type]['train']['features'], dtype=float)
         Y_train = np.array(classifier.data[data_type]['train']['classification'], dtype=float)
@@ -179,7 +179,7 @@ def main():
         for p in np.arange(0.1,1.01,0.1):
             right = 0
             wrong = 0
-            print "\nTraining Perceptron Network with ", (100*p), "% of training data."
+            print "\nTraining Perceptron Network with ", int((100*p)), "% of training data."
             train_start = time.time()
             datapoints = len(X_train) * (p)
             trainer.train( X_train[:datapoints] , Y_train[:datapoints] )
@@ -216,7 +216,7 @@ def main():
 
 #-----------------------------NEURAL NET----------------------------------------
     print "\n\n----------NEURAL NET----------"
-    for data_type in classifier.data.keys().reverse():
+    for data_type in classifier.data.keys():
         print "\n",data_type, ":"
         X_train = np.array(classifier.data[data_type]['train']['features'], dtype=float)
         Y_train = np.array(classifier.data[data_type]['train']['classification'], dtype=float)
@@ -234,7 +234,7 @@ def main():
         for p in np.arange(0.1,1.01,0.1):
             right = 0
             wrong = 0
-            print "\nTraining Neural Network with ", (100*p), "% of training data."
+            print "\nTraining Neural Network with ", int((100*p)), "% of training data."
             train_start = time.time()
             datapoints = len(X_train) * (p)
             trainer.train( X_train[:datapoints] , Y_train[:datapoints] )
